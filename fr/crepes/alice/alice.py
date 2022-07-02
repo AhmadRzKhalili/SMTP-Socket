@@ -17,11 +17,17 @@ stablish_connection()
 while True:
     print(Fore.RED + "C: " ,  end = "")
     req = input()
-    s.send(data.encode())
-    
+
     if  req == '.':
+        s.send(req.encode())
         s.close()
         print(Fore.WHITE + "", end = "")
         break
+        
+    s.send(req.encode())
+    res = s.recv(SIZE).decode()
+    print(Fore.BLUE + "S: " + res)
+
+    
 
  
