@@ -1,0 +1,10 @@
+<email_from>ahmad@email.com</email_from>
+<email_to>alice@crepes.fr</email_to>
+<email_data>
+Hi Alice,
+This is Ahmad again
+new test email for you
+Thanks,
+Bye
+
+</email_data>
