@@ -9,6 +9,8 @@ from os import path
 import colorama
 from colorama import Fore  
 
+from _thread import *
+
 step = 1
 status_code = 250
 domain_name = 'domain'
@@ -16,6 +18,7 @@ sender_email = 'sender'
 recipient_email = 'recipient'
 recipient_email_path = 'recipient path'
 data = 'data'
+curAddr = 0
 
 def parse_request(req):
     global step 
@@ -177,6 +180,8 @@ def check_recipient_email(email):
     else:
         return False
 
+
+
 def send_mail(data):
     global sender_email
     global recipient_email
@@ -197,6 +202,19 @@ def send_mail(data):
 
 
 
+def multi_threaded_client(c):
+    while True:
+        req = c.recv(SIZE).decode()
+        print(req)
+        print(step)
+        if req == 'QUIT':
+            c.close()
+            break
+        else:
+            res = parse_request(req)
+            c.send(res.encode())
+
+
 
 s = socket.socket()		
 print("[CREATED] Socket successfully created.")
@@ -204,6 +222,7 @@ print("[CREATED] Socket successfully created.")
 PORT = 25
 NUM_CLINETS = 5
 SIZE = 1024
+thread_count = 0
 
 s.bind(('', PORT))
 print("[BINDED] socket binded to %s" % (PORT))
@@ -211,22 +230,17 @@ print("[BINDED] socket binded to %s" % (PORT))
 s.listen(NUM_CLINETS)	
 print("[LISTENING] socket is listening")	
 
-
-c, addr = s.accept()
-print('[NEW CONNECTION] Got connection from', addr)
+client_thread_dict = {}
 
 res = 'response'
 
 while True:
-    req = c.recv(SIZE).decode()
-    print(req)
-    print(step)
-    if req == 'QUIT':
-        c.close()
-        break
-    else:
-        res = parse_request(req)
-        c.send(res.encode())
+    c, addr = s.accept()
+    print('[NEW CONNECTION] Got connection from', addr)
+    start_new_thread(multi_threaded_client, (c, ))
+    thread_count = thread_count + 1
+    print('thread: ' + str(thread_count))
+    
         
 
     
